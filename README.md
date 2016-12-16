@@ -25,21 +25,10 @@ cd macbuild
 It is strongly suggested that you reboot your Mac after the first run
 of this.
 
-## Variable definitions
-
-
-
-## License
-
-Mac Build is released under the **MIT** license. Please see the
-[LICENSE](https://github.com/fgimian/macbuild/blob/master/LICENSE) file for
-more details.  Feel free take what you like and use it in your own Ansible
-scripts.
-
 ## TODO
 
 ### Filevault2
-```https://derflounder.wordpress.com/2015/02/02/managing-yosemites-filevault-2-with-fdesetup/```
+**https://derflounder.wordpress.com/2015/02/02/managing-yosemites-filevault-2-with-fdesetup/**
 
 ### crontab to run mas update
 
