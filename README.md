@@ -3,7 +3,8 @@
 ## Disclaimer
 
 Please do not blindly run this on a system that you care about. These settings 
-have been hand picked and match my preferences.
+have been hand picked and match my personal preferences. On the other hand if you
+would like to please feel free to contribute. 
 
 ## Goal 
 
@@ -32,7 +33,6 @@ cd macos_automation
 ###### crontab to run mas update
 ###### ssh keygen
 ###### openssh update
-###### left off on software update
 ###### Bugs
 ###### remove safari
 
