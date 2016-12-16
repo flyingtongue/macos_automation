@@ -26,15 +26,10 @@ cd macos_automation
 ./install.sh
 ```
 
-It is strongly suggested that you reboot your Mac after the first run
-of this.
-
 ## TODO
 
 ###### Filevault2 -- **https://derflounder.wordpress.com/2015/02/02/managing-yosemites-filevault-2-with-fdesetup/**
-
 ###### crontab to run mas update
-
 ###### ssh keygen
 ###### openssh update
 ###### left off on software update
