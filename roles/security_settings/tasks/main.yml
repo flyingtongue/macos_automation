@@ -1,0 +1,353 @@
+---
+## Monster list taken from the hardwork of https://github.com/kristovatlas/osx-config-check
+## https://github.com/drduh/macOS-Security-and-Privacy-Guide/blob/master/README.md
+## https://raw.githubusercontent.com/kristovatlas/osx-config-check/master/osx-config.hjson
+## https://github.com/SummitRoute/osxlockdown/blob/58697f5162fe9e43df7dc9b6b94ffa34b0e11d4f/commands.yaml
+## https://github.com/kristovatlas/osx-config-check/
+
+- name: Close system preferences
+  command: killall "System Preferences" ; sleep 1 
+  become: yes
+  ignore_errors: true
+  become_method: sudo
+
+  #####
+  # System Preferences->Security & Privacy->Firewall->Turn On Firewall
+  # Note: This seems to get overwritten logging out/in. See following, user-specific version.
+
+- name: The OSX application firewall is enabled (system-wide)
+  command: defaults -currentHost write /Library/Preferences/com.apple.alf globalstate -bool true
+  become: yes
+  ignore_errors: true
+  become_method: sudo
+
+  ######
+  # read and verify screen saver has a password
+  #
+- name: A password is required to wake the computer from sleep or screen saver (system-wide)
+  command: defaults read com.apple.screensaver askForPassword
+  register: screen_saver_password
+
+- name: 
+  command: defaults write com.apple.screensaver askForPassword -bool true
+  when: screen_saver_password.stdout != 1
+
+  ######
+  # check that no delay exists
+  # System Preferences->Security & Privacy->General->Require password [time interval]
+
+- name: There is no delay between starting the screen saver and locking the machine (system-wide).
+  command: defaults -currentHost read com.apple.screensaver askForPasswordDelay
+  register: screen_saver_delay
+
+- name: remove delay if screen_saver_delay < 0
+  command: defaults -currentHost write com.apple.screensaver askForPasswordDelay -bool false
+  become: yes
+  become_method: sudo
+  when: screen_saver_delay.stdout != ""
+
+  ######
+  # enable logging 
+  #
+
+- name: Logging is enabled for the operating system.
+  command: defaults -currentHost read /Library/Preferences/com.apple.alf loggingenabled
+  register: logging_enabled
+
+- name: Turn logging on if not enabled
+  command: defaults -currentHost write /Library/Preferences/com.apple.alf loggingenabled -bool true 
+  become: yes
+  become_method: sudo
+  when: logging_enabled.stdout != "1"
+  
+  #####
+  # Homebrew analytics are disabled.
+  # https://github.com/Homebrew/brew/blob/master/share/doc/homebrew/Analytics.md
+  # all tests will fail until terminal is restarted
+
+- name: Homebrew analytics are disabled
+  command: bash -c "[[ -n $HOMEBREW_NO_ANALYTICS  ]] && echo 1 || echo 0"
+  register: homebrew_disabled
+
+- name: disable homebrew analytics
+  command: bash -c "grep -q 'export HOMEBREW_NO_ANALYTICS=1' ~/.profile || echo 'export HOMEBREW_NO_ANALYTICS=1' >> ~/.profile ; source ~/.profile"
+  become: yes
+  become_method: sudo
+  when: homebrew_disabled.stdout != 1
+
+  #####
+  # System Preferences->Security & Privacy->Firewall->Firewall Options...->Enable Stealth Mode
+  # Note: This seems to get overwritten logging out/in. See following, user-specific version.
+  #
+
+- name: Stealth mode is enabled for OSX Computer does not respond to ICMP ping requests or connection attempts from a closed TCP/UDP port. (system-wide)
+  command: defaults -currentHost read /Library/Preferences/com.apple.alf stealthenabled
+  register: firewall_stealth_enabled
+
+- name: enable stealth mode
+  command: defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true
+  become: yes
+  become_method: sudo
+  when: firewall_stealth_enabled != 0
+
+  ######
+  # 
+  # System Preferences->Security & Privacy->Firewall->Firewall Options...->Automatically allow signed software to receive incoming connections
+  #
+
+- name: Automatic whitelisting of Apple-signed applications through the firewall is disabled (system-wide).
+  command: defaults -currentHost read /Library/Preferences/com.apple.alf allowsignedenabled
+  register: firewall_signed_apps
+
+- name: allow signed apps through firewall
+  command: defaults -currentHost write /Library/Preferences/com.apple.alf allowsignedenabled -bool false
+  become: yes
+  become_method: sudo
+  when: firewall_signed_apps != 1
+
+  ######
+  #
+  # Captive portal for connecting to new networks is disabled to prevent MITM attacks. 
+  #
+
+- name: Captive portal for connecting to new networks is disabled to prevent MITM attacks
+  command: defaults -currentHost read /Library/Preferences/SystemConfiguration/com.apple.captive.control Active
+  register: captive_portal_read
+
+- name: captive portal change
+  command: defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool false
+  become: yes
+  become_method: sudo
+  when: captive_portal_read != 0
+
+  ######
+  # When macOS connects to new networks, it probes the network and launches a Captive Portal assistant utility if connectivity can't be determined.
+  #
+  # An attacker could trigger the utility and direct a Mac to a site with malware without user interaction, so it's best to disable this feature and log in to captive portals using your regular Web browser, provided you have first disable any custom dns and/or proxy settings.
+  #
+   
+- name: Hidden files are displayed in Finder.
+  command: defaults -currentHost read /Library/Preferences/SystemConfiguration/com.apple.finder AppleShowAllFiles
+  register: display_hidden_folders
+
+- name: change hidden files and folders
+  command: bash -c "defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.finder AppleShowAllFiles -bool true && killall Dock"
+  become: yes
+  become_method: sudo
+  when: display_hidden_folders != 1
+
+- name: App Store Automatically check for updates
+  command: softwareupdate --schedule | grep -i 'Automatic check is on'
+  become: yes
+  become_method: sudo
+
+- name: enable automatic updates
+  command: softwareupdate --schedule on
+  become: yes
+  become_method: sudo
+
+  ######
+  # System Preferences->Security & Privacy->General->Allow apps downloaded from
+  #
+  #
+
+- name: GateKeeper protection against untrusted applications is enabled
+  command: bash -c "spctl --status | awk '{print $2}'"
+  register: gatekeeper_protection
+
+- name: enable gatekeeper protection
+  command: bash -c "spctl --master-enable"
+  become: yes
+  become_method: sudo
+  when: gatekeeper_protection != 'enabled'
+
+- name: The infrared receiver is disabled [check]
+  command: defaults read /Library/Preferences/com.apple.driver.AppleIRController DeviceEnabled
+  register: ir_disable
+
+- name: disable ir receiver [action]
+  command: defaults write /Library/Preferences/com.apple.driver.AppleIRController DeviceEnabled -bool false
+  become: yes
+  become_method: sudo
+  when: ir_disable == 1
+
+- name: AirDrop file sharing is disabled [check]
+  command: defaults read com.apple.NetworkBrowser DisableAirDrop
+  become: yes
+  become_method: sudo
+  register: disable_airdrop
+
+- name: disable airdrop [action]
+  command: defaults write com.apple.NetworkBrowser DisableAirDrop -bool true
+  become: yes
+  become_method: sudo
+  when: disable_airdrop == 0
+
+  ######
+  # System Preferences->Sharing->File Sharing
+  # Cannot figure out to do this in 10.12.1
+  #
+
+  #- name: File sharing is disabled [check]
+  #command: bash -c "if [ -n "$(launchctl list | egrep AppleFileServer)"  ]; then exit 1; fi; if [ -n "$(grep -i array /Library/Preferences/SystemConfiguration/com.apple.smb.server.plist)"  ]; then echo 1; fi; echo 0;" 
+  #register: file_sharing_disable
+
+  #- name: disable file sharing [action]
+  #command: bash -c "launchctl unload -w /System/Library/LaunchDaemons/com.apple.AppleFileServer.plist; launchctl unload -w /System/Library/LaunchDaemons/com.apple.smbd.plist"
+  #when: file_sharing_disable == 1
+
+  ######
+  # System Preferences->Sharing->Printer Sharing
+  # cannot find suitable check command
+
+- name: disable print sharing ** action ** 
+  command: cupsctl --no-share-printers
+  become: yes
+  become_method: sudo
+
+  ######
+  # System Preferences->Sharing->Remote Login
+  #
+
+- name: Remote login is disabled ** check **
+  command: bash -c "systemsetup -getremotelogin | awk '{print $3}'" 
+  become: yes
+  become_method: sudo
+  register: disable_remote_login
+  
+- name: disable remote login ** action **
+  command: bash -c "systemsetup -f -setremotelogin off"
+  become: yes
+  become_method: sudo
+  when: disable_remote_login.stdout == 'On'
+
+  ######
+  #  //System Preferences->Sharing->Remote Apple Events
+  #  //See: https://support.apple.com/kb/PH18721?locale=en_US
+  #
+
+- name: Remote Apple events are disabled **check**
+  command: bash -c "systemsetup -getremoteappleevents | awk '{print $4}'"
+  become: yes
+  become_method: sudo
+  register: remote_events
+
+- name: disable remote apple events **action**
+  command: systemsetup -setremoteappleevents off
+  become: yes
+  become_method: sudo
+  when: remote_events.stdout == 'On' 
+
+  ######
+  # //System Preferences->Sharing->Internet Sharing
+  #
+
+- name: Internet Sharing is disabled on all network interfaces **check**
+  command: bash -c "defaults read /Library/Preferences/SystemConfiguration/com.apple.nat NAT | grep -c 'Enabled = 1'"
+  become: yes
+  become_method: sudo
+  ignore_errors: true
+  register: internet_sharing
+
+- debug: var=internet_sharing
+
+- name: disable internet sharing **action**
+  command: bash -c "defaults write /Library/Preferences/SystemConfiguration/com.apple.nat NAT -dict-add Enabled -bool false"
+  become: yes
+  become_method: sudo
+  when: internet_sharing.stdout == '1'
+
+  ######
+  # //System Preferences->Energy Saver->Wake for network access
+  #
+
+- name: Wake on Network Access feature is disabled **check**
+  command: bash -c "systemsetup getwakeonnetworkaccess | awk '{print $5}'"
+  become: yes
+  become_method: sudo
+  register: wol_disabled
+
+- name: disable wake on lan **action**
+  command: systemsetup -setwakeonnetworkaccess off
+  become: yes
+  become_method: sudo
+  when: wol_disabled.stdout == 'On'
+
+- name: An administrator password is required to change system wide preferences **check**
+  command: bash -c 'if [ -n "$(security authorizationdb read system.preferences 2> /dev/null | grep -A1 shared | grep -E '(true|false)' | grep 'false')"  ]; then echo 0; else echo 1; fi'
+  become: yes
+  become_method: sudo
+  register: admin_pass_required
+
+- name: require administrator password system-wide
+  command: bash -c 'security authorizationdb read system.preferences > /tmp/system.preferences.plist &&/usr/libexec/PlistBuddy -c "Set :shared false" /tmp/system.preferences.plist && security authorizationdb write system.preferences < /tmp/system.preferences.plist'
+  become: yes
+  become_method: sudo
+  when: admin_pass_required.stdout == '1'
+
+  ######
+  # boolean value does not exist by default
+  #
+
+- name: Documents are not stored to iCloud Drive by default
+  command: defaults read NSGlobalDomain NSDocumentSaveNewDocumentsToCloud
+  register: disable_icloud_drive
+
+- name: disable iCloud drive by default
+  command: bash -c 'defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false'
+  become: yes
+  become_method: sudo
+  when: disable_icloud_drive != '0'
+
+  ######
+  # The system will store a copy of memory to persistent storage (the disk), and will remove power to memory. The system will restore from disk image. If you want "hibernation" - slower sleeps, slower wakes, and better battery life, you should
+  #  use this setting.
+  #
+- name: The system will store a copy of memory to persistent storage, and will remove power to memory **check**
+  command: bash -c "pmset -g | grep hibernatemode | awk '{print $2}'"
+  register: pmset_hibernate
+
+- name: set hibernate and destroy key in memory **action**
+  command: bash -c 'pmset -a destroyfvkeyonstandby 1 ; pmset -a hibernatemode 25 ; pmset -a powernap 0 ; pmset -a standby 0 ; pmset -a standbydelay 0; pmset -a autopoweroff 0'
+  become: yes
+  become_method: sudo
+  when: pmset_hibernate.stdout != '25'
+
+- name: Apple Push Notifications are disable **check**
+  command: bash -c "launchctl list | grep -c com.apple.apsd"
+  register: disable_push_notifications
+
+- name: disable apple push notifications **action**
+  command: bash -c 'launchctl unload -w /System/Library/LaunchDaemons/com.apple.apsd.plist'
+  become: yes
+  become_method: sudo
+  when: disable_push_notifications.stdout == '1'
+
+  ######
+  # System Preferences->Desktop & Screen Saver->Start after
+  #
+  #
+ 
+- name: The idle timer for screen saver activation is set to 10 minutes or less **check**
+  command: bash -c "UUID=`ioreg -rd1 -c IOPlatformExpertDevice | grep "IOPlatformUUID" | sed -e 's/^.*"\(.*\)"$/\1/'`; for i in $(find /Users -type d -maxdepth 1); do PREF=$i/Library/Preferences/ByHost/com.apple.screensaver.$UUID; if [ -e $PREF.plist  ]; then TIMEOUT=$(defaults read $PREF.plist idleTime) && if [ $TIMEOUT -eq 0  ] || [ $TIMEOUT -gt 600  ]; then echo 1; fi; else echo 0; fi; done;" 
+  register: ss_idle_timer
+
+- name: change idle timer for screensaver
+  command: bash -c "UUID=`ioreg -rd1 -c IOPlatformExpertDevice | grep "IOPlatformUUID" | sed -e 's/^.*"\(.*\)"$/\1/'`; for i in $(find /Users -type d -maxdepth 1); do PREF=$i/Library/Preferences/ByHost/com.apple.screensaver.$UUID; if [ -e $PREF.plist  ]; then defaults -currentHost write $PREF.plist idleTime -int 600; fi; done"
+  become: yes
+  become_method: sudo
+  when: ss_idle_timer 
+
+  ######
+  # Check if the Chrome app is closed -- otherwise, it may override changes this app makes
+  #
+
+- name: The Google Chrome browser is currently closed
+  command: bash -c "ps ax | grep -c 'Google Chrome.app'"
+  register: kill_google_chrome
+
+- name: kill google chrome
+  command: bash -c 'killall "Google Chrome" ; sleep 3'
+  become: yes
+  become_method: sudo
+  when: kill_google_chrome.stdout > '1'

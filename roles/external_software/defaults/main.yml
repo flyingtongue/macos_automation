@@ -1,0 +1,71 @@
+---
+brew_taps:
+  - homebrew/completions
+  - caskroom/fonts
+  - caskroom/versions
+  - rcmdnk/rcmdnkcask
+  - fgimian/fgimian
+
+brew_packages:
+  # Unix Utilities
+  - android-platform-tools
+  - bash
+  - ctags
+  - curl
+  - findutils
+  - fish
+  - git
+  - gnu-sed
+  - hugo
+  - md5sha1sum
+  - rlwrap
+  - mas              # utility for appstore cli
+  - sassc
+  - shellcheck
+  - tree
+  - watch
+  - wget
+  - wireshark
+  - xz
+
+  # Completions
+  - bash-completion
+
+brew_casks:
+  # Freeware
+  - android-file-transfer
+  - appcleaner
+  - bestres
+  - bootchamp
+  - cog
+  - discord
+  - dropbox
+  - firefox
+  - flux
+  - google-chrome
+  - macdown
+  - miaforgmail
+  - mplayerx
+  - openemu-experimental
+  - pl2303                 # usb to serial driver for mac os
+  - skype
+  - slack
+  - sourcetree
+  - transmission
+  - virtualbox
+  - vox
+
+  # Commercial
+  - dash
+  - entropy
+  - textual
+
+appstore_apps:
+  - name: Magnet
+    id: 441258766
+  - name: Apple Remote Desktop
+    id: 409907375
+  - name: Forecast Bar
+    id: 982710545
+  - name: Boom 2
+    id: 948176063

@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  connection: local
+  roles:
+    # System Configuration
+     Software Installation & Configuration
+    #- external_software
+    - global
+    - security_settings
+    - files
+    # Unix Software
+    - vim
+    - go
+    - vagrant
+    - nodejs
+    # Desktop Applications
+    - atom

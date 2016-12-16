@@ -1,0 +1,11 @@
+---
+bin_dir: /usr/local/bin
+atom_upgrade_all: False
+atom_packages:
+  - language-ansible
+  - language-juniper
+  - language-cisco
+  - atom-beautify
+  - python-tools
+  - python-indent
+  - nord-atom-syntax

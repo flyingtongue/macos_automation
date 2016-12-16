@@ -1,0 +1,69 @@
+---
+
+- name: check the current computer sleep time
+  command: systemsetup -getcomputersleep
+  changed_when: false
+  become: yes
+  become_method: sudo
+  register: current_computer_sleep
+
+- name: set the computer sleep time
+  command: systemsetup -setcomputersleep Never
+  become: yes
+  become_method: sudo
+  when: "'Never' not in '{{ current_computer_sleep.stdout }}'"
+
+- name: check the current display sleep time
+  command: systemsetup -getdisplaysleep
+  changed_when: false
+  become: yes
+  become_method: sudo
+  register: current_display_sleep
+
+- name: set the display sleep time
+  command: systemsetup -setdisplaysleep Never
+  become: yes
+  become_method: sudo
+  when: "'Never' not in '{{ current_display_sleep.stdout }}'"
+
+- name: check the current timezone
+  command: systemsetup -gettimezone
+  changed_when: false
+  become: yes
+  become_method: sudo
+  register: current_timezone
+
+- name: set the timezone
+  command: systemsetup -settimezone {{ timezone }}
+  become: yes
+  become_method: sudo
+  when: "'{{ timezone }}' not in '{{ current_timezone.stdout }}'"
+
+- name: check flags for the user library folder
+  changed_when: false
+  command: ls -lOd ~/Library
+  register: library_flags
+
+- name: unhide the user library folder
+  command: chflags nohidden ~/Library
+  when: "'hidden' in library_flags"
+
+- name: create the screenshots folder
+  file: path=~/Pictures/Screenshots state=directory
+
+## credit author
+- name: Clean up the Dock
+  shell: dockutil --remove '{{ item }}' --allhomes
+  ignore_errors: true
+  with_items: 
+   - "{{ dockitems_remove }}"
+ 
+- name: Check if items in dock exist
+  shell: dockutil --find '{{ item.name }}' || dockutil --add '{{ item.path }}' --allhomes
+  with_items:
+   - "{{ dockitems_add }}"
+ 
+- name: Fix order
+  shell: dockutil --move '{{ item.name }}' --position {{ item.pos }} --allhomes
+  with_items:
+   - "{{ dockitems_add }}"

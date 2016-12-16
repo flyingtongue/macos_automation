@@ -1,0 +1,5 @@
+---
+nodejs_packages:
+  - bower
+  - less
+  - jshint

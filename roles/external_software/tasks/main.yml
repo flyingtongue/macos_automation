@@ -1,0 +1,44 @@
+---
+# Homebrew Unix Software
+- name: update homebrew to the latest version
+  homebrew: update_homebrew=yes
+
+- name: brew taps
+  homebrew_tap: tap={{ item }} state=present
+  with_items: "{{ brew_taps }}"
+
+- name: brew packages
+  homebrew: name={{ item }} state=latest
+  ignore_errors: true
+  with_items: "{{ brew_packages }}"
+
+# Homebrew Cask Desktop Applications
+- name: brew cask tap
+  homebrew_tap: tap=caskroom/cask state=present
+
+- name: desktop cask applications
+  homebrew_cask: name={{ item }} state=present
+  ignore_errors: true
+  with_items: "{{ brew_casks }}"
+
+- name: Mac Apple Store | Signing out
+  shell: "mas signout"
+  register: mac_account
+  when: app_store_email is defined and app_store_password is defined
+
+- name: Mac Apple Store | Signing in.
+  shell: "mas signin \"{{ app_store_email }}\" \"{{ app_store_password }}\""
+  register: result
+  when: app_store_email is defined and app_store_password is defined and mac_account is defined
+
+- name: Mac Apple Store | Install apps.
+  shell: mas list | grep "{{ item.id }}" || mas install "{{ item.id }}"
+  with_items: "{{ appstore_apps }}"
+  register: result
+  changed_when: result.stdout.find('Installed') != -1
+
+- name: Mac Apple Store | Upgrade apps.
+  shell: mas list | grep "{{ item.id }}" || mas upgrade "{{ item.id }}"
+  with_items: "{{ appstore_apps }}"
+  register: result
+  changed_when: result.stdout.find('Installed') != -1

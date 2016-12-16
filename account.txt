@@ -1,0 +1,1 @@
+app_store_email=<your email address> app_store_password=<your password>
