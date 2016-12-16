@@ -24,7 +24,7 @@ Although most sources had the MIT License applied I would like to give credit to
 ```bash
 git clone https://github.com/flyingtongue/macos_automation.git
 cd macos_automation
-./install.sh
+./setup.sh
 ```
 
 ## app store setup
