@@ -42,4 +42,5 @@ recommended that you delete the account.txt file when you are done.
 ###### openssh update
 ###### Bugs
 ###### remove safari
+###### add little snitch to external software
 
