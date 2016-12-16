@@ -31,8 +31,7 @@ of this.
 
 ## TODO
 
-###### Filevault2
-**https://derflounder.wordpress.com/2015/02/02/managing-yosemites-filevault-2-with-fdesetup/**
+###### Filevault2 -- **https://derflounder.wordpress.com/2015/02/02/managing-yosemites-filevault-2-with-fdesetup/**
 
 ###### crontab to run mas update
 
