@@ -27,6 +27,13 @@ cd macos_automation
 ./install.sh
 ```
 
+## app store setup
+
+If you would like to use the apple app store for installing and updating applications
+add your email address and password in the the account.txt file located in the
+root of the macos_automation directory. Since this file is plain text it's
+recommended that you delete the account.txt file when you are done.
+
 ## TODO
 
 ###### Filevault2 -- **https://derflounder.wordpress.com/2015/02/02/managing-yosemites-filevault-2-with-fdesetup/**
