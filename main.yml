@@ -3,8 +3,8 @@
   connection: local
   roles:
     # System Configuration
-     Software Installation & Configuration
-    #- external_software
+    #Software Installation & Configuration
+    - external_software
     - global
     - security_settings
     - files
