@@ -43,4 +43,5 @@ recommended that you delete the account.txt file when you are done.
 ###### Bugs
 ###### remove safari
 ###### add little snitch to external software
+###### add chrome extensions
 
