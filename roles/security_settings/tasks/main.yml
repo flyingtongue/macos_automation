@@ -302,7 +302,7 @@
   ######
   # The system will store a copy of memory to persistent storage (the disk), and will remove power to memory. The system will restore from disk image. If you want "hibernation" - slower sleeps, slower wakes, and better battery life, you should
   #  use this setting.
-  #
+  #  http://blog.frizk.net/2016/12/filevault-password-retrieval.html?m=1
 - name: The system will store a copy of memory to persistent storage, and will remove power to memory **check**
   command: bash -c "pmset -g | grep hibernatemode | awk '{print $2}'"
   register: pmset_hibernate

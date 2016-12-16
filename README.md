@@ -10,7 +10,7 @@ would like to please feel free to contribute.
 
 Secure and automated setup for macOS with little to no user intervention.
 
-Although most sources had the MIT License applied my sources:
+Although most sources had the MIT License applied I would like to give credit to the following projects:
  * fgimian/macbuild: https://github.com/fgimian/macbuild
  * kcrawford/dockutil https://github.com/kcrawford/dockutil
  * fubarhouse/mac-dev-playbook https://github.com/fubarhouse/mac-dev-playbook
@@ -36,7 +36,7 @@ recommended that you delete the account.txt file when you are done.
 
 ## TODO
 
-###### Filevault2 -- **https://derflounder.wordpress.com/2015/02/02/managing-yosemites-filevault-2-with-fdesetup/**
+###### Filevault2 -- **https://derflounder.wordpress.com/2015/02/02/managing-yosemites-filevault-2-with-fdesetup/** **http://blog.frizk.net/2016/12/filevault-password-retrieval.html?m=1**
 ###### crontab to run mas update
 ###### ssh keygen
 ###### openssh update
