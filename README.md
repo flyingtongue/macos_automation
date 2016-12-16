@@ -1,5 +1,9 @@
-# Mac Build (using Ansible)
+# macOS Deployment
 
+## Disclaimer
+
+Please do not blindly run this on a system that you care about. These settings 
+have been hand picked and match my preferences.
 
 ## Goal 
 
@@ -17,9 +21,9 @@ Although most sources had the MIT License applied my sources:
 ## Usage 
 
 ```bash
-git clone https://github.com/fgimian/macbuild.git
-cd macbuild
-./macbuild.sh
+git clone https://github.com/flyingtongue/macos_automation.git
+cd macos_automation
+./install.sh
 ```
 
 It is strongly suggested that you reboot your Mac after the first run
@@ -27,15 +31,14 @@ of this.
 
 ## TODO
 
-### Filevault2
+###### Filevault2
 **https://derflounder.wordpress.com/2015/02/02/managing-yosemites-filevault-2-with-fdesetup/**
 
-### crontab to run mas update
+###### crontab to run mas update
 
-### ssh keygen
-### openssh update
-### left off on software update
-### Bugs
-### remove safari
-* seems as though you cannot install apple app store apps through ssh  as locally the apps install
+###### ssh keygen
+###### openssh update
+###### left off on software update
+###### Bugs
+###### remove safari
 
