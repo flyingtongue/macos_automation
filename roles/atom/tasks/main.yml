@@ -1,13 +1,4 @@
 ---
-- name: Assure Atom and Atom package manager (APM) are installed.
-  command: which atom apm
-  register: return_value
-  always_run: yes
-  failed_when: return_value.rc
-  changed_when: False
-  environment:
-    PATH: "{{ bin_dir }}:{{ ansible_env.PATH }}"
-
 - name: Upgrade Atom packages if configured.
   atom:
     upgrade_all: yes

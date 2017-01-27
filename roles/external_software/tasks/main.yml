@@ -29,7 +29,7 @@
 - name: Mac Apple Store | Signing in.
   shell: "mas signin \"{{ app_store_email }}\" \"{{ app_store_password }}\""
   register: result
-  when: app_store_email is defined and app_store_password is defined and mac_account is defined
+  #when: app_store_email is defined and app_store_password is defined and mac_account is defined
 
 - name: Mac Apple Store | Install apps.
   shell: mas list | grep "{{ item.id }}" || mas install "{{ item.id }}"

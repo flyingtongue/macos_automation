@@ -7,7 +7,6 @@
     - external_software
     - global
     - security_settings
-    - files
     # Unix Software
     - vim
     - go

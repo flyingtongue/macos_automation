@@ -28,7 +28,7 @@ then
 fi
 
 # Perform the build
-ansible-playbook -vvv main.yml --extra-vars '$(cat account.txt)'
+ansible-playbook -vvv main.yml --extra-vars "$(cat account.txt)"
 
 # Disable passwordless sudo after the macbuild is complete
 sudo sed -i -e "s/^%admin.*/%admin  ALL=(ALL) ALL/" /etc/sudoers

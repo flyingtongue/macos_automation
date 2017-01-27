@@ -36,15 +36,12 @@
   # check that no delay exists
   # System Preferences->Security & Privacy->General->Require password [time interval]
 
-- name: There is no delay between starting the screen saver and locking the machine (system-wide).
-  command: defaults -currentHost read com.apple.screensaver askForPasswordDelay
-  register: screen_saver_delay
 
 - name: remove delay if screen_saver_delay < 0
   command: defaults -currentHost write com.apple.screensaver askForPasswordDelay -bool false
   become: yes
   become_method: sudo
-  when: screen_saver_delay.stdout != ""
+  #when: screen_saver_delay.stdout == 1
 
   ######
   # enable logging 
@@ -110,15 +107,10 @@
   # Captive portal for connecting to new networks is disabled to prevent MITM attacks. 
   #
 
-- name: Captive portal for connecting to new networks is disabled to prevent MITM attacks
-  command: defaults -currentHost read /Library/Preferences/SystemConfiguration/com.apple.captive.control Active
-  register: captive_portal_read
-
 - name: captive portal change
   command: defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool false
   become: yes
   become_method: sudo
-  when: captive_portal_read != 0
 
   ######
   # When macOS connects to new networks, it probes the network and launches a Captive Portal assistant utility if connectivity can't be determined.
@@ -126,15 +118,10 @@
   # An attacker could trigger the utility and direct a Mac to a site with malware without user interaction, so it's best to disable this feature and log in to captive portals using your regular Web browser, provided you have first disable any custom dns and/or proxy settings.
   #
    
-- name: Hidden files are displayed in Finder.
-  command: defaults -currentHost read /Library/Preferences/SystemConfiguration/com.apple.finder AppleShowAllFiles
-  register: display_hidden_folders
-
 - name: change hidden files and folders
   command: bash -c "defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.finder AppleShowAllFiles -bool true && killall Dock"
   become: yes
   become_method: sudo
-  when: display_hidden_folders != 1
 
 - name: App Store Automatically check for updates
   command: softwareupdate --schedule | grep -i 'Automatic check is on'
@@ -171,17 +158,10 @@
   become_method: sudo
   when: ir_disable == 1
 
-- name: AirDrop file sharing is disabled [check]
-  command: defaults read com.apple.NetworkBrowser DisableAirDrop
-  become: yes
-  become_method: sudo
-  register: disable_airdrop
-
 - name: disable airdrop [action]
   command: defaults write com.apple.NetworkBrowser DisableAirDrop -bool true
   become: yes
   become_method: sudo
-  when: disable_airdrop == 0
 
   ######
   # System Preferences->Sharing->File Sharing
@@ -273,31 +253,19 @@
   become_method: sudo
   when: wol_disabled.stdout == 'On'
 
-- name: An administrator password is required to change system wide preferences **check**
-  command: bash -c 'if [ -n "$(security authorizationdb read system.preferences 2> /dev/null | grep -A1 shared | grep -E '(true|false)' | grep 'false')"  ]; then echo 0; else echo 1; fi'
-  become: yes
-  become_method: sudo
-  register: admin_pass_required
-
 - name: require administrator password system-wide
   command: bash -c 'security authorizationdb read system.preferences > /tmp/system.preferences.plist &&/usr/libexec/PlistBuddy -c "Set :shared false" /tmp/system.preferences.plist && security authorizationdb write system.preferences < /tmp/system.preferences.plist'
   become: yes
   become_method: sudo
-  when: admin_pass_required.stdout == '1'
 
   ######
   # boolean value does not exist by default
   #
 
-- name: Documents are not stored to iCloud Drive by default
-  command: defaults read NSGlobalDomain NSDocumentSaveNewDocumentsToCloud
-  register: disable_icloud_drive
-
 - name: disable iCloud drive by default
   command: bash -c 'defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false'
   become: yes
   become_method: sudo
-  when: disable_icloud_drive != '0'
 
   ######
   # The system will store a copy of memory to persistent storage (the disk), and will remove power to memory. The system will restore from disk image. If you want "hibernation" - slower sleeps, slower wakes, and better battery life, you should
@@ -313,15 +281,10 @@
   become_method: sudo
   when: pmset_hibernate.stdout != '25'
 
-- name: Apple Push Notifications are disable **check**
-  command: bash -c "launchctl list | grep -c com.apple.apsd"
-  register: disable_push_notifications
-
 - name: disable apple push notifications **action**
   command: bash -c 'launchctl unload -w /System/Library/LaunchDaemons/com.apple.apsd.plist'
   become: yes
   become_method: sudo
-  when: disable_push_notifications.stdout == '1'
 
   ######
   # System Preferences->Desktop & Screen Saver->Start after

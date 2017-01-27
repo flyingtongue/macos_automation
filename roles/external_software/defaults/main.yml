@@ -12,14 +12,17 @@ brew_packages:
   - bash
   - ctags
   - curl
+  - dockutil
   - findutils
   - fish
   - git
   - gnu-sed
   - hugo
+  - iperf3
   - md5sha1sum
   - rlwrap
   - mas              # utility for appstore cli
+  - nmap
   - sassc
   - shellcheck
   - tree
@@ -32,17 +35,20 @@ brew_packages:
   - bash-completion
 
 brew_casks:
-  # Freeware
   - android-file-transfer
+  - atom
   - appcleaner
   - bestres
   - bootchamp
+  - brave
   - cog
   - discord
   - dropbox
+  - evernote
   - firefox
   - flux
   - google-chrome
+  - iterm2
   - macdown
   - miaforgmail
   - mplayerx
@@ -50,6 +56,7 @@ brew_casks:
   - pl2303                 # usb to serial driver for mac os
   - skype
   - slack
+  - spotify
   - sourcetree
   - transmission
   - virtualbox
@@ -69,3 +76,5 @@ appstore_apps:
     id: 982710545
   - name: Boom 2
     id: 948176063
+  - name: Microsoft Remote Desktop
+    id: 715768417
