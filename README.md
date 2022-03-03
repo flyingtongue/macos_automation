@@ -29,10 +29,8 @@ cd macos_automation
 
 ## app store setup
 
-If you would like to use the apple app store for installing and updating applications
-add your email address and password in the the account.txt file located in the
-root of the macos_automation directory. Since this file is plain text it's
-recommended that you delete the account.txt file when you are done.
+If you would like to use apps from Apple App Store you will need to login prior to running this ansible playbook. Apple
+cli tools no longer work to login (mas).
 
 ## TODO
 
@@ -40,8 +38,5 @@ recommended that you delete the account.txt file when you are done.
 ###### crontab to run mas update
 ###### ssh keygen
 ###### openssh update
-###### Bugs
-###### remove safari
 ###### add little snitch to external software
 ###### add chrome extensions
-
