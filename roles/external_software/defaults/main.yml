@@ -1,14 +1,7 @@
 ---
-brew_taps:
-  - homebrew/completions
-  - caskroom/fonts
-  - caskroom/versions
-  - rcmdnk/rcmdnkcask
-  - fgimian/fgimian
-
 brew_packages:
   # Unix Utilities
-  - android-platform-tools
+  - cask
   - bash
   - ctags
   - curl
@@ -30,17 +23,12 @@ brew_packages:
   - wget
   - wireshark
   - xz
-
-  # Completions
+  - utm
   - bash-completion
-
-brew_casks:
-  - android-file-transfer
   - atom
   - appcleaner
   - bestres
   - bootchamp
-  - brave
   - cog
   - discord
   - dropbox
@@ -50,17 +38,13 @@ brew_casks:
   - google-chrome
   - iterm2
   - macdown
-  - miaforgmail
   - mplayerx
-  - openemu-experimental
   - pl2303                 # usb to serial driver for mac os
   - skype
   - slack
   - spotify
-  - sourcetree
-  - transmission
   - virtualbox
-  - vox
+  - zoom
 
   # Commercial
   - dash

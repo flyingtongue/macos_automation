@@ -17,6 +17,10 @@ dockitems_remove:
   - App Store
   - Calendar
   - Siri
+  - TV
+  - Music
+  - Podcast
+  - News
 
 dockitems_add:
   - name: Launchpad
@@ -28,8 +32,8 @@ dockitems_add:
   - name: Firefox
     path: "/Applications/Firefox.app"
     pos: 3
-  - name: Brave
-    path: /Applications/Brave.app
+  - name: Notion
+    path: /Applications/Notion.app
     pos: 4
   - name: Spotify
     path: /Applications/Spotify.app
@@ -48,4 +52,7 @@ dockitems_add:
     pos: 9
   - name: Atom
     path: /Applications/Atom.app
+    pos: 10
+  - name: Slack
+    path: /Applications/Slack.app
     pos: 10

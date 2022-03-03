@@ -24,11 +24,11 @@ fi
 if ! pip2 show ansible > /dev/null 2>&1
 then
     echo "Installing Ansible"
-    pip2 install ansible
+    pip3 install ansible
 fi
 
 # Perform the build
-ansible-playbook -vvv main.yml --extra-vars "$(cat account.txt)"
+ansible-playbook -vvv main.yml 
 
 # Disable passwordless sudo after the macbuild is complete
 sudo sed -i -e "s/^%admin.*/%admin  ALL=(ALL) ALL/" /etc/sudoers

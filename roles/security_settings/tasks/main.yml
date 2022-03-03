@@ -22,17 +22,6 @@
   become_method: sudo
 
   ######
-  # read and verify screen saver has a password
-  #
-- name: A password is required to wake the computer from sleep or screen saver (system-wide)
-  command: defaults read com.apple.screensaver askForPassword
-  register: screen_saver_password
-
-- name: 
-  command: defaults write com.apple.screensaver askForPassword -bool true
-  when: screen_saver_password.stdout != 1
-
-  ######
   # check that no delay exists
   # System Preferences->Security & Privacy->General->Require password [time interval]
 
@@ -217,25 +206,6 @@
   become: yes
   become_method: sudo
   when: remote_events.stdout == 'On' 
-
-  ######
-  # //System Preferences->Sharing->Internet Sharing
-  #
-
-- name: Internet Sharing is disabled on all network interfaces **check**
-  command: bash -c "defaults read /Library/Preferences/SystemConfiguration/com.apple.nat NAT | grep -c 'Enabled = 1'"
-  become: yes
-  become_method: sudo
-  ignore_errors: true
-  register: internet_sharing
-
-- debug: var=internet_sharing
-
-- name: disable internet sharing **action**
-  command: bash -c "defaults write /Library/Preferences/SystemConfiguration/com.apple.nat NAT -dict-add Enabled -bool false"
-  become: yes
-  become_method: sudo
-  when: internet_sharing.stdout == '1'
 
   ######
   # //System Preferences->Energy Saver->Wake for network access

@@ -67,3 +67,30 @@
   shell: dockutil --move '{{ item.name }}' --position {{ item.pos }} --allhomes
   with_items:
    - "{{ dockitems_add }}"
+
+- name: Check that zshrc exists
+  stat:
+    path: ~/.zshrc
+  register: stat_result
+
+- name: Create file if it does not exist
+  file:
+    path: ~/.zshrc
+    state: touch
+  when: not stat_result.stat.exists
+
+- name: grepc - zshrc
+  ansible.builtin.lineinfile:
+    path: ~/.zshrc
+    line: 'alias grepc="grep -H -r --color=auto"'
+    state: present
+
+- name: change finder to list view
+  shell: defaults write com.apple.Finder FXPreferredViewStyle Nlsv
+
+- name: show all files
+  shell: defaults write com.apple.finder AppleShowAllFiles -string YES
+
+- name: macos expanded print window
+  shell: defaults write -g PMPrintingExpandedStateForPrint -bool TRUE
+
